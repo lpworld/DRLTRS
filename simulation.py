@@ -96,14 +96,11 @@ with tf.Session(config=tf.ConfigProto(gpu_options=gpu_options)) as sess:
         auc, hit_rate, _ = evaluate(sess, model, train_set)
         _, _, embedding_table = evaluate(sess, model, test_set)
         print('AUC: %.4f\t' % auc)
-        print('Hit Rate: %.4f\t' % hit_rate)
         
         #Update Training Set and Compute Gini Coefficients Here
         newtrain_set, new_gini_set = recommendation(embedding_table, item_emb_table)
-        print('Diversity: %.4f\t' % (compute_diversity(newtrain_set)/400))
         train_set = train_set + newtrain_set
         gini_item_set = gini_item_set + new_gini_set
-        print('Coverage: %.4f\t' % (len(set(new_gini_set))/400))
         gini = compute_gini(gini_item_set)
         print('GINI: %.4f\t' % gini)
         sys.stdout.flush()
