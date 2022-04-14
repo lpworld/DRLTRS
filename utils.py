@@ -99,25 +99,3 @@ def compute_gini(gini_item_set):
     B = np.trapz(yarray, x=xarray)
     A = 0.5 - B
     return A / (A+B)
-
-def compute_diversity(train_set):
-    embedding = [x[1] for x in train_set]
-    diversity = []
-    for i in range(len(train_set)):
-        for j in range(len(train_set)):
-            diversity.append(np.linalg.norm(embedding[i] - embedding[j]))
-    return np.mean(diversity)
-
-
-def compute_coverage(sess, model, test_set, item_count):
-    rec_item, rec_embedding = [], []
-    for _, uij in DataInput(test_set, batch_size):
-        distance, label, user, item, embedding = model.test(sess, uij)
-        distance = [float(x < margin) for x in distance]
-        for index in range(len(distance)):
-            if distance[index] > 0.5:
-                rec_item.append(item[index])
-                rec_embedding.append(embedding[index])
-    diversity = compute_diversity(rec_embedding[:10])
-    gini = compute_gini(rec_item)
-    return len(set(rec_item))/item_count, diversity/item_count, gini
